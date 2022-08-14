@@ -92,3 +92,74 @@ int sem_wait(sem_t* sem);
 int sem_post(sem_t* sem); // OVO je V, inkrementira vrednost semafora
 
 //Imas definisano gore sta su P i V
+
+
+
+
+
+// --- System V SEMAFORI ---
+-IPC System V semaphore se koristi za sinhronizaciju PROCESS-A !!! Ovi ostali semafori se koriste za threadove(niti)
+-Objekti koji se koriste za sinhorinizaciju procesa se obicno kreiraju u jezgru OS i postoje nezavisno od procesa u kojima se koriste 
+-Ne predstavlja samo jednu celobrojnu vrednost vec predstavlja niz celobrojnih vrednosti.
+-Kreiranje semafora i njegova inicijalizacija su dva odvojena procesa.
+#include<sys/sem.h>
+
+//Kreiranje semafora
+int semget(key_t key,int nsems,int flag);
+-Key je jedinstveni identifikator
+-nsems specificira broj celobrojnih vrednosti koje semafor sadrzi 
+-flag se definise kao rezultat OR operacije nad razlicitim vrednostima i odredjuje:
+    - pravo pristupa semaforu (0666 - svi imaju pristup)
+    - mod kreiranja semafora :
+            -> IPC_CREAT - kreira semafor ako on ne postoji vec 
+            -> IPC_EXCL - koristi se u kombinaciji sa IPC_CREAT i zahteva da semafor sa zadatim
+                identifikatorom ne postoji u sistemu.
+-Sistemski poziv vraća celobrojni identifikator (referencu) semafora a u slučaju greške vraća (-1).
+-Ukoliko u sistemu ne postoji semafor sa zadatim identifikatorom a specificiran je flag IPC_CREAT kreira se novi System V semafor.
+-Ukoliko u sistemu već postoji semafor sa zadatim identifikatorom (a nije specificiran flag IPC_CREAT | IPC_EXCL) ne kreira se novi semafor već se samo vraća referenca na postojeći System V semafor.
+
+//Operacije nad semaforom
+int semop(int semid,struct sembuf* semops,int nsops);
+-Prvi argument semid predstavlja identifikator (referencu) System V semafora koji je dobijen pozivom funkcije semget.
+-Drugi argument semops predstavlja niz operacija koje treba izvršiti nad celobrojnim vrednostima System V semafora. Svaka operacija je zadata kao sembuf
+struktura.
+-Treći argument nsops predstavlja broj elemenata niza sa operacijama.
+
+-Struktura sembuf je deklarisana u zaglavlju <sys/sem.h> i ima sledeći izgled:
+struct sembuf
+    {
+        ushort sem_num;
+        short sem_op;
+        short sem_flg;
+    };
+-Polje sem_num specificira indeks celobrojne vrednosti na koju se operacija odnosi.
+-Polje sem_op definiše operaciju koja se obavlja. Moguće vrednosti su:
+        > 0 - pozitivne vrednosti se dodaju odgovarajućoj celobrojnoj vrednosti semafora odnosno
+        ekvivalent je V operacija
+        < 0 - negativne vrednosti se oduzimaju od odgovarajuće celobrojne vrednosti semafora
+        odnosno ekvivalent je P operacija. Nijedna celobrojna vrednost ne može biti negativna.
+        0 - proces koji je izvršio sistemski poziv se blokira dok odgovarajuća celobrojna vrednost ne
+        dobije vrednost 0.
+-Polje sem_flag definiše način na koji se operacija obavlja. Najčešće ima vrednost NULL (kada se prihvata podrazumevani način izvršavanja operacije). Vrednost IPC_NOWAIT sprečava blokiranje procesa koji je izvršio sistemski poziv.
+-Sistemski poziv vraća 0 ukoliko su sve operacije uspešno izvršene odnosno -1 ako je došlo do greške prilikom izvršavanja neke od operacija.
+
+//Kontrola semafora
+int semctl (int semid, int semnum, int cmd, union semun arg);
+-Prvi argument semid predstavlja identifikator (referencu) System V semafora koji je dobijen pozivom funkcije semget.
+-Drugi argument semnum predstavlja indeks celobrojne vrednosti na koju se operacija odnosi.
+-Treći argument cmd definiše operaciju koju treba izvršiti nad semaforom. predstavlja broj elemenata niza sa operacijama.
+-Četvrti argument arg omogućava definisanje parametara neophodnih za operaciju i definiše se kao unija semun.
+
+-Unija semun je deklarisana u zaglavlju <sys/sem.h> i ima sledeći izgled:
+union semun
+    {
+        int val;
+        struct semid_ds *buf;
+        ushort *array;
+        struct seminfo * __buf;
+        void * __pad;
+    };
+-Polje val se koristi za zadavanje vrednosti prilikom inicijalizacije celobrojne vrednosti semafora.
+-Neke od mogućih operacija koje se mogu izvršiti nad System V semaforom:
+        -SETVAL - definiše vrednost odgovarajuće celobrojne vrednosti System V semafora
+        -IPC_RMID - brisanje System V semafora iz sistema.
