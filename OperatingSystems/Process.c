@@ -37,11 +37,11 @@ Wait -> Zaustavlja process dok se ne zavrsi bilo koji child process
 WaitPID -> Zaustavlja process dok se ne zavrsi child process ciji je PID specificiran
 
 // --- Izvrsavanje programa ---
-int execl(const char *path, const char *arg, ...); // Ocekuje listu argumenata koja se zavrsava sa NULL (string npr i to, sve se zavrsava sa /0 (NULL))
+int execl(const char *path, const char *arg, ...); // Ocekuje listu argumenata koja se zavrsava sa NULL (string npr i to, sve se zavrsava sa /0 (NULL)) { Ako prosledjujemo argumente npr, na kraju moramo da imamo NULL}
 int execv(const char *path, char *const argv[]); // Ocekuje niz argumenata, prvi argument odgovara argv[0] i mora da bude ime programa koji se poziva
 int execlp(const char *file, const char *arg, ...); // Omogucava pretrazivanje izvrsnih datoteka u PATH putanji (ako ne sadrzi '/' , Ponasa se kao i execl)
 int execvp(const char *file, char *const argv[]); // Omogucava pretrazivanje izvrsnih datoteka u PATH putanji (ako ne sadrzi '/' , Ponasa se kao i execv)
 int execle(const char *path, const char * arg, ..., char *const envp[]); // omogucavaju specificiranje vrednosti environment promenljivih (ova i execve)
 int execve(const char *filename, char *const argv[], char *const envp[]);
 //U slucaju uspeha, funkcija se NE vraca u process koji ju je pozvao vec zapocinje izvrsavanje novog programa
-//U slucaju greske vraca -1 
+//U slucaju greske vraca -1 !!!

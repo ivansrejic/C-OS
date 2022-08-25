@@ -1,4 +1,4 @@
-#include <pthreads.h>
+#include <pthread.h>
 
 //prilikom prevodjenja programa, neophodno je linkeru dodati opciju -lpthread
 //command line za prevodjenje 
@@ -13,6 +13,6 @@ Argumenti:
     -pointer na ulazni argument niti
 
 // --- Cekanje niti ---
-int pthread_join (pthread_t threadhandle,void** returnValue);
+int pthread_join (pthread_t threadhandle,void** returnValue); // (&nit , NULL ) Uglavnom
 Nit koja je pozvala funkciju pthread_join se zaustavlja i ceka da se zavrsi nit koja je zavrsena svojim handle-om
 
