@@ -10,7 +10,7 @@ Argumenti:
     -handle novokreirane niti ukoliko se funkcija uspesno izvrsi
     -argumenti za kreiranje niti(mogu imati NULL vrednost)
     -pointer na funkciju koja sadrzi programski kod koji ce niti izvrsavati // Funkcija mora da vraca void* i da ima jedan ulazni argument koji je void*
-    -pointer na ulazni argument niti
+    -pointer na ulazni argument niti //Npr ako imamo sortiranje kao funkciju odnosno start_routine, ovde dajemo arg za tu funkciju
 
 // --- Cekanje niti ---
 int pthread_join (pthread_t threadhandle,void** returnValue); // (&nit , NULL ) Uglavnom
